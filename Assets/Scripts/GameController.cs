@@ -11,6 +11,8 @@ public class GameController : MonoBehaviour {
     public float tempoDestruicao;
     
     public static GameController instancia = null;
+    public GameObject menu;
+    public GameObject canvas;
 
 	void Awake () {
         if(instancia == null){
@@ -37,6 +39,9 @@ public class GameController : MonoBehaviour {
     }
 
     public void PlayerComecou(){
+        menu.SetActive(false);
+        canvas.SetActive(false);
+        StartCoroutine(GerarObstaculos());
         estado = Estado.Jogando;
         StartCoroutine(GerarObstaculos());
     }
