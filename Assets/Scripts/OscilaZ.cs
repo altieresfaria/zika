@@ -12,6 +12,7 @@ public class OscilaZ : MonoBehaviour{
     void Start(){
         StartCoroutine(Move(max));
     }
+   
 
     IEnumerator Move(float destino){
         while (Mathf.Abs(destino - transform.localPosition.z) > 0.2f){
