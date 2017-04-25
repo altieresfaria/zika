@@ -9,27 +9,38 @@ public class GameController : MonoBehaviour {
     public float espera;
     public GameObject obstaculo;
     public float tempoDestruicao;
-    
+
     public static GameController instancia = null;
-    public GameObject menu;
+    public GameObject MenuCamera;
     public GameObject PanelMenu;
 
     public Text txtPontos;
+    public Text txtMaiorPontos;
     private int pontos;
 
-	void Awake () {
-        if(instancia == null){
+    public GameObject gameOverPanel;
+    public GameObject pontosPanel;
+
+    void Awake() {
+        if (instancia == null) {
             instancia = this;
         }
-        else if (instancia != null){
+        else if (instancia != null) {
             Destroy(gameObject);
         }
         DontDestroyOnLoad(gameObject);
-	}
-
-    void Start(){
-        estado = Estado.AguardoComecar;
     }
+
+    void Start() {
+        estado = Estado.AguardoComecar;
+        PlayerPrefs.SetInt("HighScore", 0);
+        MenuCamera.SetActive(true);
+        PanelMenu.SetActive(true);
+        gameOverPanel.SetActive(false);
+        pontosPanel.SetActive(false);
+    }
+
+   
 
     IEnumerator GerarObstaculos(){
         while (GameController.instancia.estado == Estado.Jogando){
@@ -42,8 +53,9 @@ public class GameController : MonoBehaviour {
     }
 
     public void PlayerComecou(){
-        menu.SetActive(false);
+        MenuCamera.SetActive(false);
         PanelMenu.SetActive(false);
+        pontosPanel.SetActive(true);
         StartCoroutine(GerarObstaculos());
         estado = Estado.Jogando;
         atualizarPontos(0);
@@ -52,6 +64,12 @@ public class GameController : MonoBehaviour {
 
     public void PlayerMorreu(){
         estado = Estado.GameOver;
+        if (pontos > PlayerPrefs.GetInt("HighScore"))
+        {
+            PlayerPrefs.SetInt("HighScore", pontos);
+            txtMaiorPontos.text = "" + pontos;
+        }
+        gameOverPanel.SetActive(true);
     }
     private void atualizarPontos(int x)
     {
@@ -63,6 +81,17 @@ public class GameController : MonoBehaviour {
     {
         atualizarPontos(pontos + 1);
     }
+
+    public void PlayerVoltou()
+    {
+        estado = Estado.AguardoComecar;
+        MenuCamera.SetActive(true);
+        PanelMenu.SetActive(true);
+        gameOverPanel.SetActive(false);
+        pontosPanel.SetActive(false);
+        GameObject.Find("meninoassustado").GetComponent<PlayerController>().recomecar();
+    }
+
 
 
 }
