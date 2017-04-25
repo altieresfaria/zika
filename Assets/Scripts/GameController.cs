@@ -2,7 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
+
 public class GameController : MonoBehaviour {
+
+    private List<GameObject> obstaculos;
+
 
     public Estado estado;
 
@@ -32,6 +36,7 @@ public class GameController : MonoBehaviour {
     }
 
     void Start() {
+        obstaculos = new List<GameObject>();
         estado = Estado.AguardoComecar;
         PlayerPrefs.SetInt("HighScore", 0);
         MenuCamera.SetActive(true);
@@ -40,13 +45,20 @@ public class GameController : MonoBehaviour {
         pontosPanel.SetActive(false);
     }
 
+       IEnumerator DestruirObstaculo(GameObject obj) {
+        yield return new WaitForSeconds(tempoDestruicao);
+        if (obstaculos.Remove(obj)) {
+            Destroy(obj);
+        }
+    }
    
 
     IEnumerator GerarObstaculos(){
         while (GameController.instancia.estado == Estado.Jogando){
             Vector3 pos = new Vector3(17f, Random.Range(-3f, 9f), 7.8f);
             GameObject obj = Instantiate(obstaculo, pos, Quaternion.Euler(0f,180f,0)) as GameObject;
-            Destroy(obj, tempoDestruicao);
+            obstaculos.Add(obj);
+            StartCoroutine(DestruirObstaculo(obj));
             yield return new WaitForSeconds(espera);
         }
         yield return null;
